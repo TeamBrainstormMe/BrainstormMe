@@ -49,6 +49,8 @@ function dragstarted() {
         x0 = d3.event.x,
         y0 = d3.event.y;
     
+    // need this variable to be able to add a single dot 
+    // to a canvas
     let wasDragged = false;
 
     d3.event.on("drag", function() {
@@ -60,68 +62,66 @@ function dragstarted() {
         if (dx * dx + dy * dy > 100) {d.push([x0 = x1, y0 = y1]);
         }
         else d[d.length - 1] = [x1, y1];
+        //add line
         active.attr("d", line);
         socket.emit('real_time_line', d);
-        
     });
-    
-    
-    
 
     d3.event.on("end", () => {
+        // add dot
         if (!wasDragged) {
             active.attr("d", line);
             socket.emit('real_time_line', d);
         }
         socket.emit('stop_drag');
-        
     })
 }
 
-let drawLineFromSocket = (d) => {
-    
+// draw previously saved lines (when you reload)
+let drawSavedLines = (d) => {
     let active = svg.append('path').datum(d);
     active.attr('d', line);
 }
 
+// keeping track of whether we just started dragging
+// or just continue drawing previous line
 let activeElement;
 let needPath = true;
 
 let drawLineRealTime = (d) => {
     if (needPath) {
         activeElement = svg.append("path")
-    }
+    } 
     
     activeElement.datum(d);
     activeElement.attr('d', line);
     needPath = false;
 }
 
-let undo = (fromSocket) => {
-    let lastIndex = document.querySelectorAll('path').length - 1;
-    let lastPath = document.querySelectorAll('path')[lastIndex];
-
+let undo = (signalFromSocket) => {
+    let lastPath = document.querySelector('svg').lastChild
     lastPath.remove();
 
-    if (!fromSocket) {
+    if (!signalFromSocket) {
         socket.emit('undo');
     }
-    
 }
 
 const undoButton = document.querySelector('#undo');
 undoButton.addEventListener('click', () => { undo(false)} );
 
+socket.on('undo', () => { undo(true); });
+
 socket.on('draw_line', (d) => {
-    drawLineFromSocket(d);
-})
+    drawSavedLines(d);
+});
 
 socket.on('real_time_line', (d) => {
     drawLineRealTime(d);
-})
+});
 
 socket.on('stop_drag', () => {
     needPath = true;
-})
+});
 
-socket.on('undo', () => { undo(true); })
+

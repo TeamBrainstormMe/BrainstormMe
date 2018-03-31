@@ -25,13 +25,15 @@ io.on('connection', function (socket) {
             socket.emit('draw_line', d);
         }
     }
-    
+    // need this variable to keep track of whether we 
+    // are still dragging previous line or this is a new one
     let needLastArr = true;
 
     socket.on('real_time_line', (d) => {
         if (needLastArr) line_history.push('');
         let lastIndex = line_history.length - 1;
         line_history[lastIndex] = d;
+        //sends signal to all sockets except itself
         socket.broadcast.emit('real_time_line', d);
         needLastArr = false;
     })
@@ -39,7 +41,6 @@ io.on('connection', function (socket) {
     socket.on('stop_drag', () => {
         needLastArr = true;
         socket.broadcast.emit('stop_drag');
-        // console.log("it's me")
     })
     
     socket.on('undo', () => {
