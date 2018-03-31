@@ -5,7 +5,6 @@ let canvas = d3.select("body")
 
 var socket  = io.connect();
 
-
 circle = (hzPosition, vtPosition, radius, fill) => {
     let circle = canvas.append("circle")
                 .attr("cx", hzPosition)
@@ -43,39 +42,75 @@ let svg = d3.select("svg")
             .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
             .on("start", dragstarted));
 
-let activeElement = svg.append("path");
 
 function dragstarted() {
     var d = d3.event.subject,
         active = svg.append("path").datum(d),
         x0 = d3.event.x,
         y0 = d3.event.y;
-
-    activeElement = active;
+    
+    let wasDragged = false;
 
     d3.event.on("drag", function() {
         var x1 = d3.event.x,
             y1 = d3.event.y,
             dx = x1 - x0,
             dy = y1 - y0;
-        
+            
         if (dx * dx + dy * dy > 100) {d.push([x0 = x1, y0 = y1]);
         }
         else d[d.length - 1] = [x1, y1];
         active.attr("d", line);
-        
         socket.emit('real_time_line', d);
+        
     });
+    
+    
+    
 
     d3.event.on("end", () => {
-        socket.emit('end');
+        if (!wasDragged) {
+            active.attr("d", line);
+            socket.emit('real_time_line', d);
+        }
+        socket.emit('stop_drag');
+        
     })
 }
 
 let drawLineFromSocket = (d) => {
+    
     let active = svg.append('path').datum(d);
     active.attr('d', line);
 }
+
+let activeElement;
+let needPath = true;
+
+let drawLineRealTime = (d) => {
+    if (needPath) {
+        activeElement = svg.append("path")
+    }
+    
+    activeElement.datum(d);
+    activeElement.attr('d', line);
+    needPath = false;
+}
+
+let undo = (fromSocket) => {
+    let lastIndex = document.querySelectorAll('path').length - 1;
+    let lastPath = document.querySelectorAll('path')[lastIndex];
+
+    lastPath.remove();
+
+    if (!fromSocket) {
+        socket.emit('undo');
+    }
+    
+}
+
+const undoButton = document.querySelector('#undo');
+undoButton.addEventListener('click', () => { undo(false)} );
 
 socket.on('draw_line', (d) => {
     drawLineFromSocket(d);
@@ -85,11 +120,8 @@ socket.on('real_time_line', (d) => {
     drawLineRealTime(d);
 })
 
-socket.on('end', () => {
-    activeElement = svg.append("path");
+socket.on('stop_drag', () => {
+    needPath = true;
 })
 
-let drawLineRealTime = (d) => {
-    activeElement.datum(d);
-    activeElement.attr('d', line);
-}
+socket.on('undo', () => { undo(true); })

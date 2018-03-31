@@ -21,18 +21,29 @@ io.on('connection', function (socket) {
 
     // first send the history to the new client
     for (let d of line_history) {
-        socket.emit('draw_line', d);
+        if (d !== '') {
+            socket.emit('draw_line', d);
+        }
     }
-    line_history.push('');
- 
+    
+    let needLastArr = true;
+
     socket.on('real_time_line', (d) => {
-        line_history[line_history.length - 1] = d;
-        io.emit('real_time_line', d);
+        if (needLastArr) line_history.push('');
+        let lastIndex = line_history.length - 1;
+        line_history[lastIndex] = d;
+        socket.broadcast.emit('real_time_line', d);
+        needLastArr = false;
     })
 
-    socket.on('end', () => {
-        line_history.push('');
-        io.emit('end');
+    socket.on('stop_drag', () => {
+        needLastArr = true;
+        socket.broadcast.emit('stop_drag');
+        // console.log("it's me")
     })
-
+    
+    socket.on('undo', () => {
+        line_history.pop();
+        socket.broadcast.emit('undo');
+    })
 });
