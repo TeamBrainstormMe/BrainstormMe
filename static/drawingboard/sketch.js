@@ -5,6 +5,7 @@ let canvas = d3.select("body")
 
 var socket  = io.connect();
 
+
 circle = (hzPosition, vtPosition, radius, fill) => {
     let circle = canvas.append("circle")
                 .attr("cx", hzPosition)
@@ -42,11 +43,15 @@ let svg = d3.select("svg")
             .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
             .on("start", dragstarted));
 
+let activeElement = svg.append("path");
+
 function dragstarted() {
     var d = d3.event.subject,
         active = svg.append("path").datum(d),
         x0 = d3.event.x,
         y0 = d3.event.y;
+
+    activeElement = active;
 
     d3.event.on("drag", function() {
         var x1 = d3.event.x,
@@ -59,10 +64,11 @@ function dragstarted() {
         else d[d.length - 1] = [x1, y1];
         active.attr("d", line);
         
+        socket.emit('real_time_line', d);
     });
 
     d3.event.on("end", () => {
-        socket.emit('draw_line', d)
+        socket.emit('end');
     })
 }
 
@@ -74,3 +80,16 @@ let drawLineFromSocket = (d) => {
 socket.on('draw_line', (d) => {
     drawLineFromSocket(d);
 })
+
+socket.on('real_time_line', (d) => {
+    drawLineRealTime(d);
+})
+
+socket.on('end', () => {
+    activeElement = svg.append("path");
+})
+
+let drawLineRealTime = (d) => {
+    activeElement.datum(d);
+    activeElement.attr('d', line);
+}

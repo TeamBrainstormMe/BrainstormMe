@@ -23,10 +23,16 @@ io.on('connection', function (socket) {
     for (let d of line_history) {
         socket.emit('draw_line', d);
     }
+    line_history.push('');
+ 
+    socket.on('real_time_line', (d) => {
+        line_history[line_history.length - 1] = d;
+        io.emit('real_time_line', d);
+    })
 
-    socket.on('draw_line', (data) => {
-        line_history.push(data);
-        io.emit('draw_line', data)
+    socket.on('end', () => {
+        line_history.push('');
+        io.emit('end');
     })
 
 });
