@@ -32,18 +32,24 @@ strLine = (firstHz, distTop1, secondHz, distTop2, color, width) => {
 };
 // strLine(10,80,600,80, "blue",10);
 
+//determines how the drawn line curves using B-spline
 let line = d3.line()
             .curve(d3.curveBasis);
         
+//identifies and starts a drag event within the svg container, returning x and y coordinates
+let svg = d3.select("svg");
 
-let svg = d3.select("svg")
-        .call(d3.drag()
+
+let drawBtn = document.querySelector('#drawTool');
+drawBtn.addEventListener('click', () => {
+        svg.call(d3.drag()
             .container(function() { return this; })
             .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
-            .on("start", dragstarted));
+            .on('start', drawStarted));
+});
 
-
-function dragstarted() {
+//Freehand drawing tool function
+function drawStarted() {
     var d = d3.event.subject,
         active = svg.append("path").datum(d),
         x0 = d3.event.x,
@@ -90,9 +96,8 @@ let needPath = true;
 
 let drawLineRealTime = (d) => {
     if (needPath) {
-        activeElement = svg.append("path")
+        activeElement = svg.append("path");
     } 
-    
     activeElement.datum(d);
     activeElement.attr('d', line);
     needPath = false;
@@ -124,4 +129,131 @@ socket.on('stop_drag', () => {
     needPath = true;
 });
 
+//keeps track of whether we just started dragging
+var dragging = false,
+    drawing = false,
+    startPoint;
 
+// var svg = d3.select('body').append('svg')
+//     .attr('height', 1000)
+//     .attr('width', 1000);
+
+
+let poly = () => {
+
+    let points = [],
+        g;
+
+    //handles drag event behavior
+    let polydrag = d3.drag()
+        .on('start', handleDrag)
+        .on('end', function (d) {
+            dragging = false;
+        });
+    
+    //begins drawing each line in the polygon after a mouse-click
+    svg.on('mouseup', function () {
+        if (dragging) return;
+        drawing = true;
+        startPoint = [d3.mouse(this)[0], d3.mouse(this)[1]];
+        if (svg.select('g.drawPoly').empty()) g = svg.append('g').attr('class', 'drawPoly');
+        if (d3.event.target.hasAttribute('is-handle')) {
+            closePolygon();
+            return;
+        }
+
+        //Pushes current mouse location to points array
+        points.push(d3.mouse(this));
+
+        //Places temporary outline to preview polygon while building
+        g.select('polyline').remove();
+        var polyline = g.append('polyline').attr('points', points)
+            .style('fill', 'none')
+            .attr('stroke', '#000');
+        //Create circular nodes for shape reconnection
+        for (var i = 0; i < points.length; i++) {
+            g.append('circle')
+                .attr('cx', points[i][0])
+                .attr('cy', points[i][1])
+                .attr('r', 3)
+                .attr('fill', '#FF530D')
+                .attr('stroke', 'none')
+                .attr('is-handle', 'true')
+                .style({
+                    cursor: 'pointer'
+                });
+        }
+    });
+
+    //after the polygon is drawn, append to variable
+    function closePolygon() {
+        svg.select('g.drawPoly').remove();
+        var g = svg.append('g');
+        g.append('polygon')
+            .attr('points', points)
+            .style('fill', getRandomColor());
+        //remove circular nodes after polygon is complete
+        for (var i = 0; i < points.length; i++) {
+            var circle = g.selectAll('circles')
+                .data([points[i]])
+                .enter()
+                .append('circle')
+                .attr('cx', points[i][0])
+                .attr('cy', points[i][1])
+                .attr('r', 1)
+                .attr('fill', 'none')
+                .attr('is-handle', 'true')
+                .style({
+                    cursor: 'move'
+                })
+                .call(polydrag);
+        }
+        points.splice(0);
+        drawing = false;
+    }
+
+    //While drawing, adds blue line preview and removes after each point
+    svg.on('mousemove', function () {
+        if (!drawing) return;
+        var g = d3.select('g.drawPoly');
+        g.select('line').remove();
+        var line = g.append('line')
+            .attr('x1', startPoint[0])
+            .attr('y1', startPoint[1])
+            .attr('x2', d3.mouse(this)[0] + 2)
+            .attr('y2', d3.mouse(this)[1])
+            .attr('stroke', '#53DBF3')
+            .attr('stroke-width', 1);
+    });
+
+    //handles new drag behavior
+    function handleDrag() {
+        if (drawing) return;
+        var dragCircle = d3.select(this),
+            newPoints = [],
+            circle;
+        dragging = true;
+        var poly = d3.select(this.parentNode).select('polygon');
+        var circles = d3.select(this.parentNode).selectAll('circle');
+        dragCircle
+            .attr('cx', d3.event.x)
+            .attr('cy', d3.event.y);
+        for (var i = 0; i < circles[0].length; i++) {
+            circle = d3.select(circles[0][i]);
+            newPoints.push([circle.attr('cx'), circle.attr('cy')]);
+        }
+        poly.attr('points', newPoints);
+    }
+
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+};
+//saves points where mouse clicks have stopped
+let polyBtn = document.querySelector('#polygonTool');
+polyBtn.addEventListener('click', poly);
