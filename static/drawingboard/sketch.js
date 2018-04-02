@@ -3,6 +3,30 @@ let canvas = d3.select("body")
             .attr("width", 1024)
             .attr("height", 768);
 
+var penColor='black';
+var colorBlue = document.getElementById("color-blue");
+var colorRed = document.getElementById("color-red");
+var colorGreen = document.getElementById("color-green");
+var colorBlue = document.getElementById("color-blue");
+var colorYellow = document.getElementById("color-yellow");
+var colorWhite = document.getElementById("color-white");
+
+colorBlue.addEventListener('click', function(){
+    penColor = 'blue';
+})
+colorRed.addEventListener('click', function(){
+    penColor = 'red';
+})
+colorGreen.addEventListener('click', function(){
+    penColor = 'green';
+})
+colorYellow.addEventListener('click', function(){
+    penColor = 'yellow';
+})
+colorWhite.addEventListener('click', function(){
+    penColor = 'white';
+})
+
 var socket  = io.connect();
 
 circle = (hzPosition, vtPosition, radius, fill) => {
@@ -35,23 +59,11 @@ strLine = (firstHz, distTop1, secondHz, distTop2, color, width) => {
 let line = d3.line()
             .curve(d3.curveBasis);
         
-
 let svg = d3.select("svg")
         .call(d3.drag()
             .container(function() { return this; })
             .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
             .on("start", dragstarted));
-
-var penColor='black';
-var colorBlue = document.getElementById("color-blue");
-var colorRed = document.getElementById("color-red");
-
-colorBlue.addEventListener('click', function(){
-    penColor = 'blue';
-})
-colorRed.addEventListener('click', function(){
-    penColor = 'red';
-})
 
 function dragstarted() {
     var d = d3.event.subject,

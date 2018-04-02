@@ -4,17 +4,56 @@ path {
     stroke-linejoin: round;
     stroke-linecap: round;
 }
+.menu {
+    position: absolute;
+    z-index: 10;
+    left: 28px;
+    top: 50px;
+}
+
+#undo {
+    border-radius: 20px;
+    height: 40px;
+    width: 40px;
+}
+
+#undo img {
+    height: 20px;
+    width: 20px;
+}
 
 .colors {
     position: flex;
+    flex-direction: column;
+}
+
+.colors li {
+    list-style-type: none;
+    padding: 10px 0;  
+}
+
+.color {
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
 }
 
 #color-red {
     background-color: red;
-    height: 50px;
 }
 
 #color-blue {
     background-color: blue;
-    height:50px;
+}
+
+#color-green {
+    background-color: green;
+}
+
+#color-yellow {
+    background-color: yellow;
+}
+
+#color-white {
+    background-color: white;
 }
