@@ -74,14 +74,14 @@ function dragstarted() {
             socket.emit('real_time_line', d);
         }
         socket.emit('stop_drag');
-    })
+    });
 }
 
 // draw previously saved lines (when you reload)
 let drawSavedLines = (d) => {
     let active = svg.append('path').datum(d);
     active.attr('d', line);
-}
+};
 
 // keeping track of whether we just started dragging
 // or just continue drawing previous line
@@ -96,19 +96,19 @@ let drawLineRealTime = (d) => {
     activeElement.datum(d);
     activeElement.attr('d', line);
     needPath = false;
-}
+};
 
 let undo = (signalFromSocket) => {
-    let lastPath = document.querySelector('svg').lastChild
+    let lastPath = document.querySelector('svg').lastChild;
     lastPath.remove();
 
     if (!signalFromSocket) {
         socket.emit('undo');
     }
-}
+};
 
 const undoButton = document.querySelector('#undo');
-undoButton.addEventListener('click', () => { undo(false)} );
+undoButton.addEventListener('click', () => { undo(false);} );
 
 socket.on('undo', () => { undo(true); });
 

@@ -36,15 +36,15 @@ io.on('connection', function (socket) {
         //sends signal to all sockets except itself
         socket.broadcast.emit('real_time_line', d);
         needLastArr = false;
-    })
+    });
 
     socket.on('stop_drag', () => {
         needLastArr = true;
         socket.broadcast.emit('stop_drag');
-    })
+    });
     
     socket.on('undo', () => {
         line_history.pop();
         socket.broadcast.emit('undo');
-    })
+    });
 });
