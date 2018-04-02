@@ -1,7 +1,20 @@
 path {
     fill: none;
-    stroke: #000;
     stroke-width: 3px;
     stroke-linejoin: round;
     stroke-linecap: round;
+}
+
+.colors {
+    position: flex;
+}
+
+#color-red {
+    background-color: red;
+    height: 50px;
+}
+
+#color-blue {
+    background-color: blue;
+    height:50px;
 }

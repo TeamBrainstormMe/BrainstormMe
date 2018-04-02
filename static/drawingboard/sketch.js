@@ -42,13 +42,22 @@ let svg = d3.select("svg")
             .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
             .on("start", dragstarted));
 
+var penColor='black';
+var colorBlue = document.getElementById("color-blue");
+var colorRed = document.getElementById("color-red");
+
+colorBlue.addEventListener('click', function(){
+    penColor = 'blue';
+})
+colorRed.addEventListener('click', function(){
+    penColor = 'red';
+})
 
 function dragstarted() {
     var d = d3.event.subject,
         active = svg.append("path").datum(d),
         x0 = d3.event.x,
         y0 = d3.event.y;
-    
     // need this variable to be able to add a single dot 
     // to a canvas
     let wasDragged = false;
@@ -64,6 +73,7 @@ function dragstarted() {
         else d[d.length - 1] = [x1, y1];
         //add line
         active.attr("d", line);
+        active.attr('stroke', penColor);
         socket.emit('real_time_line', d);
     });
 
@@ -71,6 +81,7 @@ function dragstarted() {
         // add dot
         if (!wasDragged) {
             active.attr("d", line);
+            active.attr('stroke', penColor);
             socket.emit('real_time_line', d);
         }
         socket.emit('stop_drag');
@@ -92,9 +103,9 @@ let drawLineRealTime = (d) => {
     if (needPath) {
         activeElement = svg.append("path")
     } 
-    
     activeElement.datum(d);
     activeElement.attr('d', line);
+    activeElement.attr('stroke', penColor);
     needPath = false;
 };
 
@@ -106,6 +117,7 @@ let undo = (signalFromSocket) => {
         socket.emit('undo');
     }
 };
+
 
 const undoButton = document.querySelector('#undo');
 undoButton.addEventListener('click', () => { undo(false);} );
@@ -123,5 +135,6 @@ socket.on('real_time_line', (d) => {
 socket.on('stop_drag', () => {
     needPath = true;
 });
+
 
 
