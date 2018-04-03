@@ -21,15 +21,21 @@
         </div>
         </header>
         <div class="menu">
-            <button id="undo"><img src="image/undo.png"></button>
-            <button id="call">CALL</button>
+            <div class='other-buttons'>
+                    <button id="undo" class="size"><img src="image/undo.png"></button>
+                    <button id="drawTool" class="size">Draw</button>
+                    <button id="polygonTool" class="size">Polygon</button>
+                    <button id="call" class="size">CALL</button>
+            </div>
+
             <div class="colors">
-                <li><button id="color-red" class="color"></button></li>
-                <li><button id="color-blue" class="color"></button></li>
-                <li><button id="color-green" class="color"></button></li>
-                <li><button id="color-yellow" class="color"></button></li>
-                <li><button id="color-white" class="color"></button></li>
-                <li><button id="color-black" class="color"></button></li>
+                <li><button id="color-red" class="color size"></button></li>
+                <li><button id="color-blue" class="color size"></button></li>
+                <li><button id="color-green" class="color size"></button></li>
+                <li><button id="color-yellow" class="color size"></button></li>
+                <li><button id="color-white" class="color size"></button></li>
+                <li><button id="color-black" class="color size"></button></li>
+                <li><button id="color-random" class="color size">?</button></li>
             </div>
             <div class="pen-size">
                 <p class="pen">Pen Size</p>
@@ -40,7 +46,7 @@
         </div>
         <script src="drawingboard/sketch.js"></script>
         <script src="main.js"></script>
-        <script src="/twilio.js"></script>
+        <script src="twilio.js"></script>
 
     </body>
 </html>

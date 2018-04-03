@@ -26,6 +26,7 @@ path {
     z-index: 10;
     left: 37px;
     top: 128px;
+    
 }
 
 header {
@@ -54,32 +55,32 @@ header {
     left: 19px;
 }
 
-#undo {
+/* #undo {
     border-radius: 20px;
     height: 40px;
     width: 40px;
-}
+} */
 
 #undo img {
-    height: 20px;
-    width: 20px;
+    height: 15px;
+    width: 15px;
 }
 
-.colors {
+/* .colors {
     position: flex;
     flex-direction: column;
-}
+} */
 
 li {
     list-style-type: none;
     padding: 10px 0;  
 }
 
-.color {
-    height: 40px;
-    width: 40px;
+/* .color {
+    height: 30px;
+    width: 30px;
     border-radius: 20px;
-}
+} */
 
 #color-red {
     background-color: red;
@@ -105,13 +106,23 @@ li {
     background-color: black;
 }
 
+#color-random {
+    font-size: 1.2em;
+    text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
 .size {
-    height: 40px;
-    width: 40px;
+    height: 30px;
+    width: 30px;
     border-radius: 20px;
 }
 
 p {
     font-family:Arial, Helvetica, sans-serif;
     font-size: 13px;
+}
+
+.other-buttons {
+    display: flex;
+    flex-direction: column;
 }

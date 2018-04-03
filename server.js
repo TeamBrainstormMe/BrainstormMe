@@ -68,21 +68,21 @@ var line_history = [];
 // event-handler for new incoming connections
 io.on('connection', function (socket) {
     // first send the history to the new client
-    for (let d of line_history) {
-        if (d !== '') {
-            socket.emit('draw_line', d);
+    for (let objD of line_history) {
+        if (objD !== '') {
+            socket.emit('draw_line', objD);
         }
     }
     // need this variable to keep track of whether we 
     // are still dragging previous line or this is a new one
     let needLastArr = true;
 
-    socket.on('real_time_line', (d) => {
+    socket.on('real_time_line', (objD) => {
         if (needLastArr) line_history.push('');
         let lastIndex = line_history.length - 1;
-        line_history[lastIndex] = d;
+        line_history[lastIndex] = objD;
         //sends signal to all sockets except the socket it came from
-        socket.broadcast.emit('real_time_line', d);
+        socket.broadcast.emit('real_time_line', objD);
         needLastArr = false;
     });
 
