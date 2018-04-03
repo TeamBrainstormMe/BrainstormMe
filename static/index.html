@@ -4,9 +4,17 @@
         <link rel="stylesheet" href="style.css" type="text/css">
         <script src="http://d3js.org/d3.v4.min.js"></script>
         <script src="socket.io/socket.io.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Share+Tech" rel="stylesheet">
         <title>BrainstormMe</title>
+        <link rel="icon" type="image/png" href="image/logo2.png"/>
     </head>
     <body>
+        <header>
+        <div id="logo">
+            <p>BrainstormMe</p>
+            <img src="image/logo2.png"> 
+        </div>
+        </header>
         <div class="menu">
             <button id="undo"><img src="image/undo.png"></button>
             <div class="colors">
@@ -15,6 +23,13 @@
                 <li><button id="color-green" class="color"></button></li>
                 <li><button id="color-yellow" class="color"></button></li>
                 <li><button id="color-white" class="color"></button></li>
+                <li><button id="color-black" class="color"></button></li>
+            </div>
+            <div class="pen-size">
+                <p class="pen">Pen Size</p>
+                <li><button id="stroke-3px" class=size>1</button></li>
+                <li><button id="stroke-8px" class=size>2</button></li>
+                <li><button id="stroke-15px" class=size>3</button></li>
             </div>
         </div>
         <script src="drawingboard/sketch.js"></script>
