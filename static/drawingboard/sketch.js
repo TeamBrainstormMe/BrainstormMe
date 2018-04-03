@@ -1,8 +1,9 @@
 let canvas = d3.select("body")
             .append("svg")
-            .attr("width", 1024)
-            .attr("height", 768);
+            .attr("width", '100vw')
+            .attr("height", '100vh');
 
+//pen color
 var penColor='black';
 var colorBlue = document.getElementById("color-blue");
 var colorRed = document.getElementById("color-red");
@@ -10,6 +11,7 @@ var colorGreen = document.getElementById("color-green");
 var colorBlue = document.getElementById("color-blue");
 var colorYellow = document.getElementById("color-yellow");
 var colorWhite = document.getElementById("color-white");
+var colorBlack = document.getElementById("color-white");
 
 colorBlue.addEventListener('click', function(){
     penColor = 'blue';
@@ -26,6 +28,26 @@ colorYellow.addEventListener('click', function(){
 colorWhite.addEventListener('click', function(){
     penColor = 'white';
 })
+colorBlack.addEventListener('click', function(){
+    penColor = 'black';
+})
+
+//stroke-width
+var strokeWidth = '1px';
+var size1= document.getElementById("stroke-3px");
+var size2 = document.getElementById("stroke-8px");
+var size3 = document.getElementById("stroke-15px");
+
+size1.addEventListener('click', function(){
+    strokeWidth = '3px';
+})
+size2.addEventListener('click', function(){
+    strokeWidth = '8px';
+})
+size3.addEventListener('click', function(){
+    strokeWidth = '20px';
+})
+
 
 var socket  = io.connect();
 
@@ -86,6 +108,7 @@ function dragstarted() {
         //add line
         active.attr("d", line);
         active.attr('stroke', penColor);
+        active.attr('stroke-width', strokeWidth);
         socket.emit('real_time_line', d);
     });
 
@@ -94,6 +117,7 @@ function dragstarted() {
         if (!wasDragged) {
             active.attr("d", line);
             active.attr('stroke', penColor);
+            active.attr('stroke-width', strokeWidth)
             socket.emit('real_time_line', d);
         }
         socket.emit('stop_drag');

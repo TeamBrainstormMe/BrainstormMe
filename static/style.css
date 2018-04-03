@@ -1,14 +1,57 @@
+* {
+    margin: 0;
+}
+
+html {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+        
+body {
+    margin: 0;
+    padding: 0;
+    min-height:100vh;
+}
+
+
 path {
     fill: none;
-    stroke-width: 3px;
     stroke-linejoin: round;
     stroke-linecap: round;
 }
 .menu {
     position: absolute;
     z-index: 10;
-    left: 28px;
-    top: 50px;
+    left: 37px;
+    top: 128px;
+}
+
+header {
+    height: 94px;
+    background-color: rgba(12, 12, 12, 0.904);
+}
+
+#logo p {
+    position: absolute;
+    z-index: 10;
+    left: 30px;
+    font-size: 20px;
+    font-family: 'Share Tech', sans-serif;
+    top: 35px;
+    left: 100px;
+    color: white;
+    letter-spacing: 4px;
+}
+
+#logo img {
+    position: absolute;
+    height: 55px;
+    width: 80px;
+    z-index: 10;
+    top: 20px;
+    left: 19px;
 }
 
 #undo {
@@ -27,7 +70,7 @@ path {
     flex-direction: column;
 }
 
-.colors li {
+li {
     list-style-type: none;
     padding: 10px 0;  
 }
@@ -56,4 +99,19 @@ path {
 
 #color-white {
     background-color: white;
+}
+
+#color-black {
+    background-color: black;
+}
+
+.size {
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+}
+
+p {
+    font-family:Arial, Helvetica, sans-serif;
+    font-size: 13px;
 }
