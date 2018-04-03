@@ -1,11 +1,16 @@
 {
-  "name": "brainstormME",
+  "name": "BrainstormME",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "dependencies": {
+    "dotenv": "^5.0.1",
     "express": "^4.16.3",
-    "socket.io": "^2.1.0"
+    "https": "^1.0.0",
+    "ngrok": "^3.0.1",
+    "path": "^0.12.7",
+    "socket.io": "^2.1.0",
+    "twilio": "^3.14.0"
   },
   "devDependencies": {},
   "scripts": {
