@@ -2,13 +2,17 @@
 <html lang="en">
     <head>
         <link rel="stylesheet" href="style.css" type="text/css">
-        <script src="http://d3js.org/d3.v4.min.js"></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="//media.twiliocdn.com/sdk/js/client/v1.4/twilio.min.js"></script>
         <title>BrainstormMe</title>
     </head>
     <body>
         <button id="undo">UNDO</button>
-        <script src="main.js"></script>
+        <button id="call">CALL</button>
+        <script src="/main.js"></script>
         <script src="drawingboard/sketch.js"></script>
+        <script src="/twilio.js"></script>
     </body>
 </html>

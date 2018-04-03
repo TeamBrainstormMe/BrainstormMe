@@ -98,19 +98,15 @@ let drawLineRealTime = (d) => {
     needPath = false;
 }
 
-let undo = (signalFromSocket) => {
+let undo = () => {
     let lastPath = document.querySelector('svg').lastChild
     lastPath.remove();
-
-    if (!signalFromSocket) {
-        socket.emit('undo');
-    }
 }
 
 const undoButton = document.querySelector('#undo');
-undoButton.addEventListener('click', () => { undo(false)} );
+undoButton.addEventListener('click', () => socket.emit('undo') );
 
-socket.on('undo', () => { undo(true); });
+socket.on('undo', () => { undo(); });
 
 socket.on('draw_line', (d) => {
     drawSavedLines(d);
