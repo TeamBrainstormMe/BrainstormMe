@@ -5,14 +5,42 @@
         <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="socket.io/socket.io.js"></script>
+
         <script type="text/javascript" src="//media.twiliocdn.com/sdk/js/client/v1.4/twilio.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Share+Tech" rel="stylesheet">
+
         <title>BrainstormMe</title>
+        <link rel="icon" type="image/png" href="image/logo2.png"/>
     </head>
     <body>
-        <button id="undo">UNDO</button>
-        <button id="call">CALL</button>
-        <script src="/main.js"></script>
+
+        <header>
+        <div id="logo">
+            <p>BrainstormMe</p>
+            <img src="image/logo2.png"> 
+        </div>
+        </header>
+        <div class="menu">
+            <button id="undo"><img src="image/undo.png"></button>
+            <button id="call">CALL</button>
+            <div class="colors">
+                <li><button id="color-red" class="color"></button></li>
+                <li><button id="color-blue" class="color"></button></li>
+                <li><button id="color-green" class="color"></button></li>
+                <li><button id="color-yellow" class="color"></button></li>
+                <li><button id="color-white" class="color"></button></li>
+                <li><button id="color-black" class="color"></button></li>
+            </div>
+            <div class="pen-size">
+                <p class="pen">Pen Size</p>
+                <li><button id="stroke-3px" class=size>1</button></li>
+                <li><button id="stroke-8px" class=size>2</button></li>
+                <li><button id="stroke-15px" class=size>3</button></li>
+            </div>
+        </div>
         <script src="drawingboard/sketch.js"></script>
+        <script src="main.js"></script>
         <script src="/twilio.js"></script>
+
     </body>
 </html>

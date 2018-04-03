@@ -1,7 +1,53 @@
 let canvas = d3.select("body")
             .append("svg")
-            .attr("width", 1024)
-            .attr("height", 768);
+            .attr("width", '100vw')
+            .attr("height", '100vh');
+
+//pen color
+var penColor='black';
+var colorBlue = document.getElementById("color-blue");
+var colorRed = document.getElementById("color-red");
+var colorGreen = document.getElementById("color-green");
+var colorBlue = document.getElementById("color-blue");
+var colorYellow = document.getElementById("color-yellow");
+var colorWhite = document.getElementById("color-white");
+var colorBlack = document.getElementById("color-white");
+
+colorBlue.addEventListener('click', function(){
+    penColor = 'blue';
+})
+colorRed.addEventListener('click', function(){
+    penColor = 'red';
+})
+colorGreen.addEventListener('click', function(){
+    penColor = 'green';
+})
+colorYellow.addEventListener('click', function(){
+    penColor = 'yellow';
+})
+colorWhite.addEventListener('click', function(){
+    penColor = 'white';
+})
+colorBlack.addEventListener('click', function(){
+    penColor = 'black';
+})
+
+//stroke-width
+var strokeWidth = '1px';
+var size1= document.getElementById("stroke-3px");
+var size2 = document.getElementById("stroke-8px");
+var size3 = document.getElementById("stroke-15px");
+
+size1.addEventListener('click', function(){
+    strokeWidth = '3px';
+})
+size2.addEventListener('click', function(){
+    strokeWidth = '8px';
+})
+size3.addEventListener('click', function(){
+    strokeWidth = '20px';
+})
+
 
 var socket  = io.connect();
 
@@ -35,20 +81,17 @@ strLine = (firstHz, distTop1, secondHz, distTop2, color, width) => {
 let line = d3.line()
             .curve(d3.curveBasis);
         
-
 let svg = d3.select("svg")
         .call(d3.drag()
             .container(function() { return this; })
             .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
             .on("start", dragstarted));
 
-
 function dragstarted() {
     var d = d3.event.subject,
         active = svg.append("path").datum(d),
         x0 = d3.event.x,
         y0 = d3.event.y;
-    
     // need this variable to be able to add a single dot 
     // to a canvas
     let wasDragged = false;
@@ -64,6 +107,8 @@ function dragstarted() {
         else d[d.length - 1] = [x1, y1];
         //add line
         active.attr("d", line);
+        active.attr('stroke', penColor);
+        active.attr('stroke-width', strokeWidth);
         socket.emit('real_time_line', d);
     });
 
@@ -71,17 +116,19 @@ function dragstarted() {
         // add dot
         if (!wasDragged) {
             active.attr("d", line);
+            active.attr('stroke', penColor);
+            active.attr('stroke-width', strokeWidth)
             socket.emit('real_time_line', d);
         }
         socket.emit('stop_drag');
-    })
+    });
 }
 
 // draw previously saved lines (when you reload)
 let drawSavedLines = (d) => {
     let active = svg.append('path').datum(d);
     active.attr('d', line);
-}
+};
 
 // keeping track of whether we just started dragging
 // or just continue drawing previous line
@@ -92,11 +139,12 @@ let drawLineRealTime = (d) => {
     if (needPath) {
         activeElement = svg.append("path")
     } 
-    
     activeElement.datum(d);
     activeElement.attr('d', line);
+    activeElement.attr('stroke', penColor);
     needPath = false;
-}
+};
+
 
 let undo = () => {
     let lastPath = document.querySelector('svg').lastChild
@@ -105,6 +153,7 @@ let undo = () => {
 
 const undoButton = document.querySelector('#undo');
 undoButton.addEventListener('click', () => socket.emit('undo') );
+
 
 socket.on('undo', () => { undo(); });
 
@@ -119,5 +168,6 @@ socket.on('real_time_line', (d) => {
 socket.on('stop_drag', () => {
     needPath = true;
 });
+
 
 
