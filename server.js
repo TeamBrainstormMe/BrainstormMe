@@ -6,6 +6,17 @@ var express = require('express'),
     socketIo = require('socket.io'),
     twilio = require('twilio');
 
+const pg = require('pg-promise')();
+// const dbConfig = 'postgres://illia_chaban@localhost:5432/brainme';
+const dbConfig = {
+    host: 'localhost',
+    port: 5432,
+    database: 'brainme',
+    user: 'illia_chaban',
+    // password: 'user-password'
+    };
+const db = pg(dbConfig);
+
 const accountSid = 'AC2ceea3a33d11e9a9412fd25ae894828a';
 const authToken = 'e8345cab51239a74558a895455dc93b2';
 //https://www.twilio.com/console/voice/twiml/apps  // brain2 app  ++ the line 54
@@ -83,8 +94,8 @@ app.use(urlencoded({ extended: false }));
 app.use(router);
 const server = http.createServer(app)
 
-console.log('Twilio Client app HTTP server running at http://localhost:8080');
-server.listen(8080);
+console.log('Twilio Client app HTTP server running at http://localhost:3000');
+server.listen(3000);
 var io = socketIo.listen(server);
 
 

@@ -85,7 +85,7 @@ drawBtn.addEventListener('click', () => {
 //Freehand drawing tool function
 function drawStarted() {
     var d = d3.event.subject;
-    objD = { d: d, color: penColor, size: strokeWidth };
+    objD = { d: d, color: penColor, size: strokeWidth, type: 'line' };
     var active = svg.append("path").datum(objD.d),
         x0 = d3.event.x,
         y0 = d3.event.y;
@@ -206,7 +206,7 @@ let poly = () => {
             .attr('points', points)
             .style('fill', penColor);
 
-        let objD = {d: points, color: penColor, type: 'polygon'}
+        let objD = {d: points, color: penColor, type: 'polygon', size: '-'}
         socket.emit('draw_poly', objD);
 
         points.splice(0);

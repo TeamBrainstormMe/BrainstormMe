@@ -15,7 +15,6 @@ body {
     min-height:100vh;
 }
 
-
 path {
     fill: none;
     stroke-linejoin: round;
@@ -27,9 +26,7 @@ path {
     z-index: 10;
     left: 37px;
     top: 128px;
-    
 }
-
 
 #logo img {
     position: absolute;
@@ -38,45 +35,16 @@ path {
     z-index: 10;
     top: 25px;
     left: 30px;
+    width: 250px;
 }
 
-#undo {
-    height: 50px;
-    width: 50px;
-    border-radius: 30px;
-}
-
-
-#undo img {
-    height: 15px;
-    width: 15px;
-}
-
-
-#call {
-    height: 50px;
-    width: 50px;
-    border-radius: 30px;
-}
-
-#call img {
+img {
     height: 20px;
     width: 20px;
 }
 
 #colorsIcon{
     display: flex;
-}
-
-#cIcon {
-    height: 50px;
-    width: 50px;
-    border-radius: 30px;
-}
-
-#cIcon img {
-    height: 20px;
-    width: 20px;
 }
 
 .colors {
@@ -99,13 +67,6 @@ path {
 li {
     list-style-type: none;
     padding: 10px 0;  
-}
-
-
-.color {
-    height: 50px;
-    width: 50px;
-    border-radius: 30px;
 }
 
 
@@ -137,17 +98,6 @@ li {
     display: flex;
 }
 
-#penIcon {
-    height: 50px;
-    width: 50px;
-    border-radius: 30px;
-}
-
-#penIcon img {
-    height: 20px;
-    width: 20px;
-}
-
 .pen-size {
     display: none;
 }
@@ -165,8 +115,26 @@ li {
 }
 
 .size {
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
     border-radius: 30px;
 }
 
+#projectsWrapper {
+    display:flex;
+}
+
+#call {
+    display: flex;
+}
+
+.projects {
+    display: none;
+}
+
+.projects.active {
+    display:flex;
+    flex-direction: row;
+    position: absolute;
+    left: 50px;
+}
