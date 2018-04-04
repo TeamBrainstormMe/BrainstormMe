@@ -7,11 +7,11 @@ var express = require('express'),
     twilio = require('twilio');
 
 const pg = require('pg-promise')();
-// const dbConfig = 'postgres://illia_chaban@localhost:5432/brainme';
+// const dbConfig = 'postgres://illia_chaban@localhost:5432/brainMe';
 const dbConfig = {
     host: 'localhost',
     port: 5432,
-    database: 'brainme',
+    database: 'brainMe',
     user: 'illia_chaban',
     // password: 'user-password'
     };
@@ -129,9 +129,10 @@ io.on('connection', function (socket) {
         needLastArr = false;
     });
 
-    socket.on('stop_drag', () => {
+    socket.on('stop_drag', (objD) => {
         needLastArr = true;
         socket.broadcast.emit('stop_drag');
+        
 
     })
 

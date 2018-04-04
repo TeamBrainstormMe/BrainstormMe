@@ -118,7 +118,7 @@ function drawStarted() {
             active.attr('stroke-width', objD.size)
             socket.emit('real_time_line', objD);
         }
-        socket.emit('stop_drag');
+        socket.emit('stop_drag', objD);
     });
 }
 

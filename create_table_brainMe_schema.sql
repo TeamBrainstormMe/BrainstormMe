@@ -3,7 +3,7 @@ CREATE TABLE recordings (
     projectId integer NOT NULL,
     audio text,
     video text
-)
+);
 
 CREATE TABLE el_history (
     projectId integer NOT NULL,
@@ -11,4 +11,4 @@ CREATE TABLE el_history (
     el_data text,
     color text,
     size text
-)
+);
