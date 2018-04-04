@@ -1,7 +1,7 @@
 let canvas = d3.select("body")
-            .append("svg")
-            .attr("width", '100vw')
-            .attr("height", '100vh');
+    .append("svg")
+    .attr("width", '100vw')
+    .attr("height", '100vh');
 
 
 function getRandomColor() {
@@ -13,58 +13,60 @@ function getRandomColor() {
     return color;
 }
 
+
+
 //pen color
-var penColor='black';
+var penColor = 'black';
 var colorBlue = document.getElementById("color-blue");
 var colorRed = document.getElementById("color-red");
 var colorGreen = document.getElementById("color-green");
 var colorBlue = document.getElementById("color-blue");
 var colorYellow = document.getElementById("color-yellow");
 var colorWhite = document.getElementById("color-white");
-var colorBlack = document.getElementById("color-white");
+var colorBlack = document.getElementById("color-black");
 var colorRandom = document.getElementById('color-random');
 
-colorBlue.addEventListener('click', function(){
+colorBlue.addEventListener('click', function () {
     penColor = 'blue';
 })
-colorRed.addEventListener('click', function(){
+colorRed.addEventListener('click', function () {
     penColor = 'red';
 })
-colorGreen.addEventListener('click', function(){
+colorGreen.addEventListener('click', function () {
     penColor = 'green';
 })
-colorYellow.addEventListener('click', function(){
+colorYellow.addEventListener('click', function () {
     penColor = 'yellow';
 })
-colorWhite.addEventListener('click', function(){
+colorWhite.addEventListener('click', function () {
     penColor = 'white';
 })
-colorBlack.addEventListener('click', function(){
+colorBlack.addEventListener('click', function () {
     penColor = 'black';
 })
-colorRandom.addEventListener('click', ()=> {
+colorRandom.addEventListener('click', () => {
     penColor = getRandomColor();
     colorRandom.style.backgroundColor = penColor;
 })
 
 //stroke-width
 var strokeWidth = '3px';
-var size1= document.getElementById("stroke-3px");
+var size1 = document.getElementById("stroke-3px");
 var size2 = document.getElementById("stroke-8px");
 var size3 = document.getElementById("stroke-15px");
 
-size1.addEventListener('click', function(){
+size1.addEventListener('click', function () {
     strokeWidth = '3px';
 })
-size2.addEventListener('click', function(){
+size2.addEventListener('click', function () {
     strokeWidth = '8px';
 })
-size3.addEventListener('click', function(){
+size3.addEventListener('click', function () {
     strokeWidth = '20px';
 })
 
 
-var socket  = io.connect();
+var socket = io.connect();
 
 // circle = (hzPosition, vtPosition, radius, fill) => {
 //     let circle = canvas.append("circle")
@@ -95,29 +97,35 @@ var socket  = io.connect();
 
 //determines how the drawn line curves using B-spline
 let line = d3.line()
-            .curve(d3.curveBasis);
+    .curve(d3.curveBasis);
 
 //identifies and starts a drag event within the svg container, returning x and y coordinates
 let svg = d3.select("svg")
-        // .call(d3.drag()
-        //     .container(function() { return this; })
-        //     .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
-        //     .on("start", dragstarted));
+// .call(d3.drag()
+//     .container(function() { return this; })
+//     .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
+//     .on("start", dragstarted));
+
+let polygonClicked = false;
 
 let drawBtn = document.querySelector('#drawTool');
 drawBtn.addEventListener('click', () => {
-        svg.call(d3.drag()
-            .container(function() { return this; })
-            .subject(function() { var p = [d3.event.x, d3.event.y]; return [p, p]; })
-            .on('start', drawStarted));
-            // .on('end', ()=> {});
+    polygonClicked = false;
+    svg.call(d3.drag()
+        .container(function () { return this; })
+        .subject(function () { var p = [d3.event.x, d3.event.y]; return [p, p]; })
+        .on('start', () => {
+            if (!polygonClicked) {drawStarted();}
+            
+        }));
+    // .on('end', ()=> {});
 });
 
 //Freehand drawing tool function
 function drawStarted() {
+    console.log(d3.event)
     var d = d3.event.subject;
-    objD = {d: d, color: penColor, size: strokeWidth};
-    // console.log(objD)
+    objD = { d: d, color: penColor, size: strokeWidth };
     var active = svg.append("path").datum(objD.d),
         x0 = d3.event.x,
         y0 = d3.event.y;
@@ -125,13 +133,15 @@ function drawStarted() {
     // to a canvas
     let wasDragged = false;
 
-    d3.event.on("drag", function() {
+    d3.event.on("drag", function () {
+        console.log(d3.event)
         var x1 = d3.event.x,
             y1 = d3.event.y,
             dx = x1 - x0,
             dy = y1 - y0;
-            
-        if (dx * dx + dy * dy > 50) {objD.d.push([x0 = x1, y0 = y1]);
+
+        if (dx * dx + dy * dy > 50) {
+            objD.d.push([x0 = x1, y0 = y1]);
         }
         else objD.d[d.length - 1] = [x1, y1];
         //add line
@@ -171,7 +181,7 @@ let needPath = true;
 let drawLineRealTime = (objD) => {
     if (needPath) {
         activeElement = svg.append("path")
-    } 
+    }
     activeElement.datum(objD.d);
     activeElement.attr('d', line);
     activeElement.attr('stroke', objD.color);
@@ -186,7 +196,7 @@ let undo = () => {
 }
 
 const undoButton = document.querySelector('#undo');
-undoButton.addEventListener('click', () => socket.emit('undo') );
+undoButton.addEventListener('click', () => socket.emit('undo'));
 
 //keeps track of whether we just started dragging
 
@@ -205,18 +215,71 @@ let poly = () => {
     let points = [],
         g;
 
-    //handles drag event behavior
-    let polydrag = d3.drag()
-        .on('start', handleDrag)
-        .on('end', function (d) {
-            dragging = false;
-        });
+
+    // svg.call(d3.drag()
+    //     .container(function () { return this; })
+    //     .subject(function () { var p = [d3.event.x, d3.event.y]; return [p, p]; })
+    //     .on('start', function () {
+    //         if (!dragging) {
+    //         drawing = true;
+    //         startPoint = [d3.mouse(this)[0], d3.mouse(this)[1]];
+    //         //Sets the g object's class to drawPoly
+    //         if (svg.select('g.drawPoly').empty()) g = svg.append('g').attr('class', 'drawPoly');
+    //         if (d3.event.target.hasAttribute('is-handle')) {
+    //             closePolygon();
+    //             // return;
+    //         }
     
+    //         //Pushes current mouse location to points array
+    //         points.push(d3.mouse(this));
+    
+    //         //Places temporary outline to preview polygon while building
+    //         g.select('polyline').remove();
+    //         var polyline = g.append('polyline').attr('points', points)
+    //             .style('fill', 'none')
+    //             .attr('stroke', '#000');
+    //         //Create circular nodes for shape reconnection
+    //         for (var i = 0; i < points.length; i++) {
+    //             g.append('circle')
+    //                 .attr('cx', points[i][0])
+    //                 .attr('cy', points[i][1])
+    //                 .attr('r', 3)
+    //                 .attr('fill', '#FF530D')
+    //                 .attr('stroke', 'none')
+    //                 .attr('is-handle', 'true')
+    //                 .style('cursor', 'pointer');
+    //             // console.log(points[i])
+    //         }}
+
+    //         d3.event.on('drag', function () {
+    //             if (drawing) {
+    //             var g = d3.select('g.drawPoly');
+    //             //create and remove the blue line that traces out the polygon being drawn
+    //             g.select('line').remove();
+    //             var line = g.append('line')
+    //                 .attr('x1', startPoint[0])
+    //                 .attr('y1', startPoint[1])
+    //                 .attr('x2', d3.mouse(this)[0] + 2)
+    //                 .attr('y2', d3.mouse(this)[1])
+    //                 .attr('stroke', '#53DBF3')
+    //                 .attr('stroke-width', 1);
+    //         }});
+    //     }))
+        
+        
+    //     let polydrag = d3.drag()
+    //     .on('start', handleDrag)
+    //     .on('end', function (d) {
+    //         dragging = false;
+    //     });
+
+
     //begins drawing each line in the polygon after a mouse-click
     svg.on('mouseup', function () {
         if (dragging) return;
         drawing = true;
         startPoint = [d3.mouse(this)[0], d3.mouse(this)[1]];
+        //Sets the g object's class to drawPoly
         if (svg.select('g.drawPoly').empty()) g = svg.append('g').attr('class', 'drawPoly');
         if (d3.event.target.hasAttribute('is-handle')) {
             closePolygon();
@@ -241,7 +304,7 @@ let poly = () => {
                 .attr('stroke', 'none')
                 .attr('is-handle', 'true')
                 .style('cursor', 'pointer');
-            console.log(points[i])
+            // console.log(points[i])
         }
     });
 
@@ -252,20 +315,10 @@ let poly = () => {
         g.append('polygon')
             .attr('points', points)
             .style('fill', penColor);
-        //remove circular nodes after polygon is complete
-        for (var i = 0; i < points.length; i++) {
-            var circle = g.selectAll('circles')
-                .data([points[i]])
-                .enter()
-                .append('circle')
-                .attr('cx', points[i][0])
-                .attr('cy', points[i][1])
-                .attr('r', 1)
-                .attr('fill', 'none')
-                .attr('is-handle', 'true')
-                .style('cursor', 'move')
-                .call(polydrag);
-        }
+
+        let objD = {d: points, color: penColor, type: 'polygon'}
+        socket.emit('draw_poly', objD);
+
         points.splice(0);
         drawing = false;
     }
@@ -274,6 +327,7 @@ let poly = () => {
     svg.on('mousemove', function () {
         if (!drawing) return;
         var g = d3.select('g.drawPoly');
+        //create and remove the blue line that traces out the polygon being drawn
         g.select('line').remove();
         var line = g.append('line')
             .attr('x1', startPoint[0])
@@ -287,34 +341,33 @@ let poly = () => {
     //handles new drag behavior
     function handleDrag() {
         if (drawing) return;
-        var dragCircle = d3.select(this),
-            newPoints = [],
-            circle;
         dragging = true;
-        var poly = d3.select(this.parentNode).select('polygon');
-        var circles = d3.select(this.parentNode).selectAll('circle');
-        dragCircle
-            .attr('cx', d3.event.x)
-            .attr('cy', d3.event.y);
-        for (var i = 0; i < circles[0].length; i++) {
-            circle = d3.select(circles[0][i]);
-            newPoints.push([circle.attr('cx'), circle.attr('cy')]);
-        }
-        poly.attr('points', newPoints);
     }
 
 
 };
 //saves points where mouse clicks have stopped
 let polyBtn = document.querySelector('#polygonTool');
-polyBtn.addEventListener('click', poly);
+polyBtn.addEventListener('click', () => {
+    // svg.call(d3.drag().on('start', ()=> {
+    //     return;
+    // }));
+    polygonClicked = true;
+    poly();
+
+});
 
 
+let drawPolyFromSocket = (objD) => {
+    var g = svg.append('g');
+    g.append('polygon')
+        .attr('points', objD.d)
+        .style('fill', objD.color);
+}
 
-
-
-
-
+socket.on('draw_poly', (objD) => {
+    drawPolyFromSocket(objD);
+})
 
 socket.on('undo', () => { undo(); });
 

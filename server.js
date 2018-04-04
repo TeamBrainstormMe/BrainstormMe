@@ -70,7 +70,12 @@ io.on('connection', function (socket) {
     // first send the history to the new client
     for (let objD of line_history) {
         if (objD !== '') {
-            socket.emit('draw_line', objD);
+            if (objD.type === 'polygon') {
+                socket.emit('draw_poly', objD)
+            } else {
+                socket.emit('draw_line', objD);
+            }
+            
         }
     }
     // need this variable to keep track of whether we 
@@ -98,4 +103,8 @@ io.on('connection', function (socket) {
         io.emit('undo');
     })
 
+    socket.on('draw_poly', (objD) => {
+        line_history.push(objD);
+        socket.broadcast.emit('draw_poly', objD);
+    })
 });
