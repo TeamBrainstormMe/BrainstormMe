@@ -16,31 +16,35 @@
 
         <header>
         <div id="logo">
-            <p>BrainstormMe</p>
-            <img src="image/logo2.png"> 
+            <img src="image/logo3.png"> 
         </div>
         </header>
         <div class="menu">
-            <button id="undo"><img src="image/undo.png"></button>
-            <button id="call">CALL</button>
-            <div class="colors">
-                <li><button id="color-red" class="color"></button></li>
-                <li><button id="color-blue" class="color"></button></li>
-                <li><button id="color-green" class="color"></button></li>
-                <li><button id="color-yellow" class="color"></button></li>
-                <li><button id="color-white" class="color"></button></li>
-                <li><button id="color-black" class="color"></button></li>
+            <li><button id="undo"><img src="image/undo.png"></button></li>
+            <div id="colorsIcon">
+                <li><button id="cIcon"><img src="image/color.png"></button></li>
+                <div class="colors">
+                        <li><button id="color-red" class="color"></button></li>
+                        <li><button id="color-blue" class="color"></button></li>
+                        <li><button id="color-green" class="color"></button></li>
+                        <li><button id="color-yellow" class="color"></button></li>
+                        <li><button id="color-white" class="color"></button></li>
+                        <li><button id="color-black" class="color"></button></li>
+                    </div>
             </div>
-            <div class="pen-size">
-                <p class="pen">Pen Size</p>
-                <li><button id="stroke-3px" class=size>1</button></li>
-                <li><button id="stroke-8px" class=size>2</button></li>
-                <li><button id="stroke-15px" class=size>3</button></li>
+            <div id="penStroke">
+                <li><button id="penIcon"><img src="image/pen.png"></button></li>
+                <div class="pen-size">
+                    <li><button id="stroke-3px" class=size>1</button></li>
+                    <li><button id="stroke-8px" class=size>2</button></li>
+                    <li><button id="stroke-15px" class=size>3</button></li>
+                </div>
             </div>
+            <li><button id="call"><img src="image/call.png"></button></li>
         </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
         <script src="drawingboard/sketch.js"></script>
         <script src="main.js"></script>
         <script src="/twilio.js"></script>
-
     </body>
 </html>
