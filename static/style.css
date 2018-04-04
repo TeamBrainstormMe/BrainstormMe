@@ -170,3 +170,12 @@ li {
     border-radius: 30px;
 }
 
+#drawTool img {
+    height: 20px;
+    width: 20px;
+}
+
+#polygonTool img {
+    height: 20px;
+    width: 20px;
+}
