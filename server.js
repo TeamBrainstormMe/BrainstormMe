@@ -1,5 +1,6 @@
 var express = require('express'),
     http = require('http'),
+    https = require('https'),
     fs = require('fs'),
     urlencoded = require('body-parser').urlencoded,
     socketIo = require('socket.io'),
@@ -7,11 +8,7 @@ var express = require('express'),
 
 const accountSid = 'AC2ceea3a33d11e9a9412fd25ae894828a';
 const authToken = 'e8345cab51239a74558a895455dc93b2';
-//https://www.twilio.com/console/voice/twiml/apps  // brain2 app
-//SID: SK74bee0e3ecd82a4cd1368d12094fdb5d
-//Secret: YacG5KHZ4RDcdk8si7RTgnqEBSYLbFXc
-//tw: 3xgpSgurELss7f00MGKAz+fN5Ha1G6gkCy6jWqVH
-//initial appSID = 'APad2ba4ae3ca0a4ca10c752f151e54ca3'
+//https://www.twilio.com/console/voice/twiml/apps  // brain2 app  ++ the line 54
 const appSID = 'AP1695bd9bd03148e7983d3616d396f48f';
 const callerId = '+14045311571';
 
@@ -43,12 +40,42 @@ router.get('/token', (req, res) => {
     res.send(tokenGenerator());
 });
 
-router.post('/voice', twilio.webhook({validate: false}), function(req, res, next) {
+router.post('/voice', twilio.webhook({ validate: false }), function (req, res, next) {
     var twiml = new VoiceResponse();
-    var dial = twiml.dial({callerId : callerId});
+    var dial = twiml.dial({
+        callerId: callerId,
+        record: 'record-from-answer',
+        // record: 'record-from-ringing',
+        //change that !!!!
+        recordingStatusCallback: 'https://26bba057.ngrok.io/getRecording',
+    });
     dial.conference('My conference')
     res.send(twiml.toString());
-  });
+});
+
+
+const client = require('twilio')(accountSid, authToken);
+router.post('/getRecording', (req, res) => {
+    // console.log(req.body['RecordingDuration']);
+    let recordingId = req.body.RecordingSid;
+
+    const promise = client.api.v2010
+        .accounts(accountSid)
+        .recordings(recordingId)
+        .fetch();
+    promise.then(response => {
+        // console.log(response);
+        let regexp = /([^]*?).json/;
+        console.log('date created: ' + response.dateCreated);
+        console.log('date updated: ' + response.dateUpdated);
+
+        //save the audio file
+        https.get(regexp.exec('https://api.twilio.com' + response.uri)[1] + '.mp3', (res) => {
+            let fileStream = fs.createWriteStream('record3.mp3');
+            res.pipe(fileStream);
+        });
+    });
+})
 
 const app = express();
 app.use(express.static(__dirname + '/static'));
@@ -68,21 +95,26 @@ var line_history = [];
 // event-handler for new incoming connections
 io.on('connection', function (socket) {
     // first send the history to the new client
-    for (let d of line_history) {
-        if (d !== '') {
-            socket.emit('draw_line', d);
+    for (let objD of line_history) {
+        if (objD !== '') {
+            if (objD.type === 'polygon') {
+                socket.emit('draw_poly', objD)
+            } else {
+                socket.emit('draw_line', objD);
+            }
+
         }
     }
     // need this variable to keep track of whether we 
     // are still dragging previous line or this is a new one
     let needLastArr = true;
 
-    socket.on('real_time_line', (d) => {
+    socket.on('real_time_line', (objD) => {
         if (needLastArr) line_history.push('');
         let lastIndex = line_history.length - 1;
-        line_history[lastIndex] = d;
+        line_history[lastIndex] = objD;
         //sends signal to all sockets except the socket it came from
-        socket.broadcast.emit('real_time_line', d);
+        socket.broadcast.emit('real_time_line', objD);
         needLastArr = false;
     });
 
@@ -98,4 +130,8 @@ io.on('connection', function (socket) {
         io.emit('undo');
     })
 
+    socket.on('draw_poly', (objD) => {
+        line_history.push(objD);
+        socket.broadcast.emit('draw_poly', objD);
+    })
 });

@@ -27,6 +27,7 @@ path {
     z-index: 10;
     left: 37px;
     top: 128px;
+    
 }
 
 
@@ -45,10 +46,12 @@ path {
     border-radius: 30px;
 }
 
+
 #undo img {
-    height: 20px;
-    width: 20px;
+    height: 15px;
+    width: 15px;
 }
+
 
 #call {
     height: 50px;
@@ -92,16 +95,19 @@ path {
     padding: 0 8px 8px 0;
 }
 
+
 li {
     list-style-type: none;
     padding: 10px 0;  
 }
+
 
 .color {
     height: 50px;
     width: 50px;
     border-radius: 30px;
 }
+
 
 #color-red {
     background-color: red;
@@ -163,3 +169,4 @@ li {
     width: 50px;
     border-radius: 30px;
 }
+
