@@ -11,8 +11,10 @@
     "ngrok": "^3.0.1",
     "path": "^0.12.7",
     "pg-promise": "^8.2.2",
+    "promisify": "0.0.3",
     "socket.io": "^2.1.0",
-    "twilio": "^3.14.0"
+    "twilio": "^3.14.0",
+    "util": "^0.10.3"
   },
   "devDependencies": {},
   "scripts": {

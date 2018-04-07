@@ -85,10 +85,12 @@ drawBtn.addEventListener('click', () => {
 //Freehand drawing tool function
 function drawStarted() {
     var d = d3.event.subject;
-    objD = { d: d, color: penColor, size: strokeWidth, type: 'line' };
+    objD = {projectid: 1, d: d, color: penColor, size: strokeWidth, type: 'line' };
     var active = svg.append("path").datum(objD.d),
         x0 = d3.event.x,
         y0 = d3.event.y;
+
+    socket.emit('start_line', objD);
 
     // variable enables to add a single dot to a canvas
     let wasDragged = false;
@@ -119,6 +121,7 @@ function drawStarted() {
             socket.emit('real_time_line', objD);
         }
         socket.emit('stop_drag', objD);
+        console.log(objD)
     });
 }
 
@@ -133,17 +136,17 @@ let drawSavedLines = (objD) => {
 // keeping track of whether we just started dragging
 // or just continue drawing previous line
 let activeElement;
-let needPath = true;
+
+let startLine = () => {
+    activeElement = svg.append("path");
+}
+
 
 let drawLineRealTime = (objD) => {
-    if (needPath) {
-        activeElement = svg.append("path")
-    }
     activeElement.datum(objD.d);
     activeElement.attr('d', line);
     activeElement.attr('stroke', objD.color);
     activeElement.attr('stroke-width', objD.size);
-    needPath = false;
 };
 
 
@@ -153,7 +156,7 @@ let undo = () => {
 }
 
 const undoButton = document.querySelector('#undo');
-undoButton.addEventListener('click', () => socket.emit('undo'));
+undoButton.addEventListener('click', () => socket.emit('undo', 1));  //projectId
 
 ////################### drawing polygon ####################
 let poly = () => {
@@ -206,7 +209,7 @@ let poly = () => {
             .attr('points', points)
             .style('fill', penColor);
 
-        let objD = {d: points, color: penColor, type: 'polygon', size: '-'}
+        let objD = {projectid: 1, d: points, color: penColor, type: 'polygon', size: '3px'}
         socket.emit('draw_poly', objD);
 
         points.splice(0);
@@ -251,25 +254,19 @@ let drawPolyFromSocket = (objD) => {
         .style('fill', objD.color);
 }
 
-socket.on('draw_poly', (objD) => {
-    drawPolyFromSocket(objD);
-})
+socket.on('draw_poly', drawPolyFromSocket)
 
-socket.on('undo', () => { undo(); });
+socket.on('undo', undo);
 
-socket.on('draw_line', (objD) => {
-    // console.log('draw_after_reload')
-    drawSavedLines(objD);
-});
+socket.on('draw_line', drawSavedLines);
 
-socket.on('real_time_line', (objD) => {
-    // console.log('drawing_real_time')
-    drawLineRealTime(objD);
-});
+socket.on('real_time_line', drawLineRealTime);
 
-socket.on('stop_drag', () => {
-    // console.log('stop_drag')
-    needPath = true;
-});
+socket.on('start_line', startLine)
+
+// socket.on('stop_drag', () => {
+//     console.log('stop_drag')
+//     needPath = true;
+// });
 
 

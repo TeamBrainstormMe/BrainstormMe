@@ -1,14 +1,15 @@
 
 CREATE TABLE recordings (
-    projectId integer NOT NULL,
+    projectid integer NOT NULL,
     audio text,
     video text
 );
 
 CREATE TABLE el_history (
-    projectId integer NOT NULL,
-    element_type text,
-    el_data text,
+    projectid integer NOT NULL,
+    el_count integer NOT NULL,
+    type text,
+    d text,
     color text,
     size text
 );

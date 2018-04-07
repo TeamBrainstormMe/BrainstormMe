@@ -6,6 +6,8 @@ var express = require('express'),
     socketIo = require('socket.io'),
     twilio = require('twilio');
 
+var promisify = require('util').promisify;
+
 const pg = require('pg-promise')();
 // const dbConfig = 'postgres://illia_chaban@localhost:5432/brainMe';
 const dbConfig = {
@@ -14,7 +16,7 @@ const dbConfig = {
     database: 'brainMe',
     user: 'illia_chaban',
     // password: 'user-password'
-    };
+};
 const db = pg(dbConfig);
 
 const accountSid = 'AC2ceea3a33d11e9a9412fd25ae894828a';
@@ -100,50 +102,105 @@ var io = socketIo.listen(server);
 
 
 ////############## canvas ################
-// array of all lines drawn
-var line_history = [];
+let getElementHistory = () => {
+    return db.query(`SELECT * FROM el_history ORDER BY projectid, el_count;`)
+        .then((elements) => {
+            el_history = [];
+            elements.forEach((element) => {
+                element.d = JSON.parse(element.d);
+                el_history.push(element);
+            })
+            return el_history;
+        })
+}
+
+let insertDB = (objD) => {
+    return db.query(`
+            INSERT INTO el_history VALUES (
+            1, ${objD.el_count + 1}, '${objD.type}', '${JSON.stringify(objD.d)}', '${objD.color}', '${objD.size}');`);
+}
+
+let updateCount = (objD) => {
+    return db.query(`
+        SELECT max(el_count) FROM el_history
+        WHERE projectid = ${objD.projectid};`)
+        .then( result => {
+            let count = result[0].max; 
+            count === null ? objD.el_count = 0: objD.el_count = count;
+            return objD;
+        })
+};
+
+// let getLastCount = (projectId) => {
+//     return db.query(`
+//         SELECT max(el_count) FROM el_history
+//         WHERE projectid = ${projectId};`)
+//         .then( result => result[0].max);
+// }
+    
+let updateElDB = (objD) => {
+    return db.query(`
+            UPDATE el_history SET
+                d = '${JSON.stringify(objD.d)}'
+                WHERE projectid = ${objD.projectid} AND
+                el_count = ${objD.el_count};`);
+}
+
+let deleteLastElDB = (projectId) => {
+    return db.query(`
+        SELECT max(el_count) FROM el_history
+        WHERE projectid = ${projectId};`)
+            .then( result => result[0].max)
+            .then( (lastCount) => {
+                db.query(`DELETE FROM el_history
+                WHERE projectid = ${projectId} 
+                AND el_count = ${lastCount};`)
+            })
+}
 
 // event-handler for new incoming connections
 io.on('connection', function (socket) {
-    // first send the history to the new client
-    for (let objD of line_history) {
-        if (objD !== '') {
-            if (objD.type === 'polygon') {
-                socket.emit('draw_poly', objD)
-            } else {
-                socket.emit('draw_line', objD);
+
+    getElementHistory().then( (el_history) => {
+        for (let objD of el_history) {
+            if (objD !== '') {
+                if (objD.type === 'polygon') {
+                    socket.emit('draw_poly', objD)
+                } else {
+                    socket.emit('draw_line', objD);
+                }
+    
             }
-
         }
-    }
-    // need this variable to keep track of whether we 
-    // are still dragging previous line or this is a new one
-    let needLastArr = true;
-
-    socket.on('real_time_line', (objD) => {
-        if (needLastArr) line_history.push('');
-        let lastIndex = line_history.length - 1;
-        line_history[lastIndex] = objD;
-        //sends signal to all sockets except the socket it came from
-        socket.broadcast.emit('real_time_line', objD);
-        needLastArr = false;
-    });
-
-    socket.on('stop_drag', (objD) => {
-        needLastArr = true;
-        socket.broadcast.emit('stop_drag');
-        
-
     })
 
-    socket.on('undo', () => {
-        line_history.pop();
-        //sends signal to everyone including the socket itself
-        io.emit('undo');
+    socket.on('start_line', (objD) => {
+        updateCount(objD).then( insertDB );
+        socket.broadcast.emit('start_line')
+        
+    })
+
+    //might create a bug where coordinates of previous
+    //element will be updated to coordinates of the starting 
+    //point of a new element, because of the promises in 'start_line'
+    socket.on('real_time_line', (objD) => {
+        updateCount(objD).then( updateElDB );
+        socket.broadcast.emit('real_time_line', objD);
+        
+    });
+
+    socket.on('undo', (projectId) => {
+        deleteLastElDB(projectId);
+        io.emit('undo', (projectId));
     })
 
     socket.on('draw_poly', (objD) => {
-        line_history.push(objD);
+        updateCount(objD).then( insertDB );
         socket.broadcast.emit('draw_poly', objD);
+        
+    })
+
+    socket.on('disconnect', () => {
+        console.log('disconnected')
     })
 });
