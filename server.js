@@ -60,7 +60,7 @@ router.post('/voice', twilio.webhook({ validate: false }), function (req, res, n
         record: 'record-from-answer',
         // record: 'record-from-ringing',
         //change that !!!!
-        recordingStatusCallback: 'https://26bba057.ngrok.io/getRecording',
+        recordingStatusCallback: 'https://ec2-18-219-233-254.us-east-2.compute.amazonaws.com/getRecording',
     });
     dial.conference('My conference')
     res.send(twiml.toString());

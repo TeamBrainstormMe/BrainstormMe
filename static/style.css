@@ -120,6 +120,7 @@ li {
     border-radius: 30px;
 }
 
+<<<<<<< HEAD
 #projectsWrapper {
     display:flex;
 }
@@ -137,4 +138,14 @@ li {
     flex-direction: row;
     position: absolute;
     left: 50px;
+=======
+#drawTool img {
+    height: 20px;
+    width: 20px;
+}
+
+#polygonTool img {
+    height: 20px;
+    width: 20px;
+>>>>>>> b9985722ef6c75ad276b64b62b17010b382f91ba
 }
