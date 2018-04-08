@@ -117,26 +117,8 @@ let getElementHistory = () => {
 let insertDB = (objD) => {
     return db.query(`
             INSERT INTO el_history VALUES (
-            1, ${objD.el_count + 1}, '${objD.type}', '${JSON.stringify(objD.d)}', '${objD.color}', '${objD.size}');`);
+            1, ${objD.el_count}, '${objD.type}', '${JSON.stringify(objD.d)}', '${objD.color}', '${objD.size}');`);
 }
-
-let updateCount = (objD) => {
-    return db.query(`
-        SELECT max(el_count) FROM el_history
-        WHERE projectid = ${objD.projectid};`)
-        .then( result => {
-            let count = result[0].max; 
-            count === null ? objD.el_count = 0: objD.el_count = count;
-            return objD;
-        })
-};
-
-// let getLastCount = (projectId) => {
-//     return db.query(`
-//         SELECT max(el_count) FROM el_history
-//         WHERE projectid = ${projectId};`)
-//         .then( result => result[0].max);
-// }
     
 let updateElDB = (objD) => {
     return db.query(`
@@ -175,16 +157,12 @@ io.on('connection', function (socket) {
     })
 
     socket.on('start_line', (objD) => {
-        updateCount(objD).then( insertDB );
-        socket.broadcast.emit('start_line')
-        
+        insertDB(objD);
+        socket.broadcast.emit('start_line', objD);
     })
 
-    //might create a bug where coordinates of previous
-    //element will be updated to coordinates of the starting 
-    //point of a new element, because of the promises in 'start_line'
     socket.on('real_time_line', (objD) => {
-        updateCount(objD).then( updateElDB );
+        updateElDB(objD);
         socket.broadcast.emit('real_time_line', objD);
         
     });
@@ -195,12 +173,8 @@ io.on('connection', function (socket) {
     })
 
     socket.on('draw_poly', (objD) => {
-        updateCount(objD).then( insertDB );
+        insertDB(objD);
         socket.broadcast.emit('draw_poly', objD);
         
-    })
-
-    socket.on('disconnect', () => {
-        console.log('disconnected')
     })
 });

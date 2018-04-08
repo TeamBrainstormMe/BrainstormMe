@@ -65,6 +65,14 @@ size3.addEventListener('click', function () {
 
 var socket = io.connect();
 
+let countElements = () => {
+    return canvas._groups[0][0].childElementCount;
+};
+
+// keeps track of an active element
+// possible bug when drawing simultaneously???
+let active;
+
 //determines how the drawn line curves using B-spline
 let line = d3.line()
     .curve(d3.curveBasis);
@@ -73,27 +81,21 @@ const svg = d3.select("svg");
 
 let drawBtn = document.querySelector('#drawTool');
 drawBtn.addEventListener('click', () => {
-    polygonClicked = false;
     svg.call(d3.drag()
         .container(function () { return this; })
         .subject(function () { var p = [d3.event.x, d3.event.y]; return [p, p]; })
-        .on('start', () => {
-            drawStarted();
-        }));
+        .on('start', drawStarted));
 });
 
 //Freehand drawing tool function
 function drawStarted() {
     var d = d3.event.subject;
-    objD = {projectid: 1, d: d, color: penColor, size: strokeWidth, type: 'line' };
-    var active = svg.append("path").datum(objD.d),
-        x0 = d3.event.x,
+    objD = {projectid: 1, el_count: countElements() + 1, d: d, color: penColor, size: strokeWidth, type: 'line' };
+    let x0 = d3.event.x,
         y0 = d3.event.y;
 
+    drawLine(objD);
     socket.emit('start_line', objD);
-
-    // variable enables to add a single dot to a canvas
-    let wasDragged = false;
 
     d3.event.on("drag", function () {
         var x1 = d3.event.x,
@@ -105,54 +107,29 @@ function drawStarted() {
             objD.d.push([x0 = x1, y0 = y1]);
         }
         else objD.d[d.length - 1] = [x1, y1];
-        //add line
-        active.attr("d", line);
-        active.attr('stroke', objD.color);
-        active.attr('stroke-width', objD.size);
-        socket.emit('real_time_line', objD);
-    });
 
-    d3.event.on("end", () => {
-        // add dot
-        if (!wasDragged) {
-            active.attr("d", line);
-            active.attr('stroke', objD.color);
-            active.attr('stroke-width', objD.size)
-            socket.emit('real_time_line', objD);
-        }
-        socket.emit('stop_drag', objD);
-        console.log(objD)
+        updateLineRealTime(objD);
+        socket.emit('real_time_line', objD);
     });
 }
 
-// draw previously saved lines (when you reload)
-let drawSavedLines = (objD) => {
-    let active = svg.append('path').datum(objD.d);
+let drawLine = (objD) => {
+    active = svg.append('path').datum(objD.d);
     active.attr('d', line);
     active.attr('stroke', objD.color);
     active.attr('stroke-width', objD.size);
 };
 
-// keeping track of whether we just started dragging
-// or just continue drawing previous line
-let activeElement;
-
-let startLine = () => {
-    activeElement = svg.append("path");
-}
-
-
-let drawLineRealTime = (objD) => {
-    activeElement.datum(objD.d);
-    activeElement.attr('d', line);
-    activeElement.attr('stroke', objD.color);
-    activeElement.attr('stroke-width', objD.size);
+let updateLineRealTime = (objD) => {
+    active.datum(objD.d);
+    active.attr('d', line);
+    active.attr('stroke', objD.color);
+    active.attr('stroke-width', objD.size);
 };
-
 
 let undo = () => {
     let lastPath = document.querySelector('svg').lastChild
-    lastPath.remove();
+    if (lastPath) lastPath.remove();
 }
 
 const undoButton = document.querySelector('#undo');
@@ -209,7 +186,7 @@ let poly = () => {
             .attr('points', points)
             .style('fill', penColor);
 
-        let objD = {projectid: 1, d: points, color: penColor, type: 'polygon', size: '3px'}
+        let objD = {projectid: 1, el_count: countElements(), d: points, color: penColor, type: 'polygon', size: '3px'}
         socket.emit('draw_poly', objD);
 
         points.splice(0);
@@ -237,7 +214,7 @@ let poly = () => {
         dragging = true;
     }
 };
-//saves points where mouse clicks have stopped
+
 let polyBtn = document.querySelector('#polygonTool');
 polyBtn.addEventListener('click', () => {
     //reset svg listening for drag event
@@ -245,7 +222,6 @@ polyBtn.addEventListener('click', () => {
     poly();
 
 });
-
 
 let drawPolyFromSocket = (objD) => {
     var g = svg.append('g');
@@ -258,15 +234,11 @@ socket.on('draw_poly', drawPolyFromSocket)
 
 socket.on('undo', undo);
 
-socket.on('draw_line', drawSavedLines);
+socket.on('draw_line', drawLine);
 
-socket.on('real_time_line', drawLineRealTime);
+socket.on('real_time_line', updateLineRealTime);
 
-socket.on('start_line', startLine)
+socket.on('start_line', drawLine)
 
-// socket.on('stop_drag', () => {
-//     console.log('stop_drag')
-//     needPath = true;
-// });
 
 
