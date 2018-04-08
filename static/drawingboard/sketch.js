@@ -15,52 +15,24 @@ function getRandomColor() {
 
 //pen color
 var penColor = 'black';
-var colorBlue = document.getElementById("color-blue");
-var colorRed = document.getElementById("color-red");
-var colorGreen = document.getElementById("color-green");
-var colorBlue = document.getElementById("color-blue");
-var colorYellow = document.getElementById("color-yellow");
-var colorWhite = document.getElementById("color-white");
-var colorBlack = document.getElementById("color-black");
-var colorRandom = document.getElementById('color-random');
-
-colorBlue.addEventListener('click', function () {
-    penColor = 'blue';
-})
-colorRed.addEventListener('click', function () {
-    penColor = 'red';
-})
-colorGreen.addEventListener('click', function () {
-    penColor = 'green';
-})
-colorYellow.addEventListener('click', function () {
-    penColor = 'yellow';
-})
-colorWhite.addEventListener('click', function () {
-    penColor = 'white';
-})
-colorBlack.addEventListener('click', function () {
-    penColor = 'black';
-})
-colorRandom.addEventListener('click', () => {
-    penColor = getRandomColor();
-    colorRandom.style.backgroundColor = penColor;
+const penColorButtons = document.querySelectorAll('.colors.size button');
+penColorButtons.forEach( (btn) => {
+    btn.addEventListener('click', () => {
+        penColor = btn.id.split('').splice(6).join('');
+        if (penColor === 'random') {
+            penColor = getRandomColor();
+            btn.style.backgroundColor = penColor;
+        }
+    })
 })
 
 //stroke-width
 var strokeWidth = '3px';
-var size1 = document.getElementById("stroke-3px");
-var size2 = document.getElementById("stroke-8px");
-var size3 = document.getElementById("stroke-15px");
-
-size1.addEventListener('click', function () {
-    strokeWidth = '3px';
-})
-size2.addEventListener('click', function () {
-    strokeWidth = '8px';
-})
-size3.addEventListener('click', function () {
-    strokeWidth = '20px';
+const penSizeButtons = document.querySelectorAll('.pen-size button');
+penSizeButtons.forEach( (btn) => {
+    btn.addEventListener('click', () => {
+        strokeWidth = btn.id.split('').splice(7).join('');
+    })
 })
 
 var socket = io.connect();
@@ -231,13 +203,9 @@ let drawPolyFromSocket = (objD) => {
 }
 
 socket.on('draw_poly', drawPolyFromSocket)
-
 socket.on('undo', undo);
-
 socket.on('draw_line', drawLine);
-
 socket.on('real_time_line', updateLineRealTime);
-
 socket.on('start_line', drawLine)
 
 
