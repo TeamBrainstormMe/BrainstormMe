@@ -4,13 +4,17 @@
   "description": "",
   "main": "server.js",
   "dependencies": {
+    "audio-loader": "^1.0.3",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "https": "^1.0.0",
     "ngrok": "^3.0.1",
     "path": "^0.12.7",
+    "pg-promise": "^8.2.2",
+    "promisify": "0.0.3",
     "socket.io": "^2.1.0",
-    "twilio": "^3.14.0"
+    "twilio": "^3.14.0",
+    "util": "^0.10.3"
   },
   "devDependencies": {},
   "scripts": {

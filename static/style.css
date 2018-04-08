@@ -15,12 +15,12 @@ body {
     min-height:100vh;
 }
 
-
 path {
     fill: none;
     stroke-linejoin: round;
     stroke-linecap: round;
 }
+
 .menu {
     position: absolute;
     z-index: 10;
@@ -28,58 +28,47 @@ path {
     top: 128px;
 }
 
-header {
-    height: 94px;
-    background-color: rgba(12, 12, 12, 0.904);
-}
-
-#logo p {
-    position: absolute;
-    z-index: 10;
-    left: 30px;
-    font-size: 20px;
-    font-family: 'Share Tech', sans-serif;
-    top: 35px;
-    left: 100px;
-    color: white;
-    letter-spacing: 4px;
-}
-
 #logo img {
     position: absolute;
-    height: 55px;
-    width: 80px;
+    height: 80px;
+    border-radius: 10px;
     z-index: 10;
-    top: 20px;
-    left: 19px;
+    top: 25px;
+    left: 30px;
+    width: 250px;
 }
 
-#undo {
-    border-radius: 20px;
-    height: 40px;
-    width: 40px;
-}
-
-#undo img {
+img {
     height: 20px;
     width: 20px;
 }
 
-.colors {
-    position: flex;
-    flex-direction: column;
+#colorsIcon{
+    display: flex;
 }
+
+.colors {
+    display: none;
+}
+
+.colors.active {
+    display:flex;
+    flex-direction: row;
+    padding: 10px;
+    position: absolute;
+    left: 50px;
+}
+
+.colors li {
+    padding: 0 8px 8px 0;
+}
+
 
 li {
     list-style-type: none;
     padding: 10px 0;  
 }
 
-.color {
-    height: 40px;
-    width: 40px;
-    border-radius: 20px;
-}
 
 #color-red {
     background-color: red;
@@ -105,13 +94,47 @@ li {
     background-color: black;
 }
 
+#penStroke{
+    display: flex;
+}
+
+.pen-size {
+    display: none;
+}
+
+.pen-size.active {
+    display:flex;
+    flex-direction: row;
+    padding: 10px;
+    position: absolute;
+    left: 50px;
+}
+
+.pen-size li {
+    padding: 0 8px 8px 0;
+}
+
 .size {
     height: 40px;
     width: 40px;
-    border-radius: 20px;
+    border-radius: 30px;
 }
 
-p {
-    font-family:Arial, Helvetica, sans-serif;
-    font-size: 13px;
+#projectsWrapper {
+    display:flex;
+}
+
+#call {
+    display: flex;
+}
+
+.projects {
+    display: none;
+}
+
+.projects.active {
+    display:flex;
+    flex-direction: row;
+    position: absolute;
+    left: 50px;
 }
