@@ -145,6 +145,9 @@ let deleteLastElDB = (projectId) => {
 
 // event-handler for new incoming connections
 io.on('connection', function (socket) {
+    
+    var clientIp = socket.request.connection.remoteAddress;
+    console.log('client ip', clientIp);
 
     getElementHistory().then( (el_history) => {
         for (let objD of el_history) {
