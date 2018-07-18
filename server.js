@@ -12,14 +12,14 @@ var promisify = require('util').promisify;
 
 const pg = require('pg-promise')();
 // const dbConfig = 'postgres://illia_chaban@localhost:5432/brainMe';
-const dbConfig = {
-    host: 'localhost',
-    port: 5432,
-    database: 'brainMe',
-    user: 'illia_chaban',
+// const dbConfig = {
+//     host: 'localhost',
+//     port: 5432,
+//     database: 'brainMe',
+//     user: 'illia_chaban',
     // password: 'user-password'
-};
-const db = pg(dbConfig);
+// };
+const db = pg(process.env.DATABASE_URL);
 
 const accountSid = 'AC2ceea3a33d11e9a9412fd25ae894828a';
 const authToken = 'e8345cab51239a74558a895455dc93b2';
