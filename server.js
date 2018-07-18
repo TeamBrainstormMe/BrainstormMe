@@ -98,7 +98,7 @@ app.use(urlencoded({ extended: false }));
 app.use(router);
 const server = http.createServer(app)
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 console.log(`Twilio Client app HTTP server running at http://localhost:${port}`);
 server.listen(port);
 var io = socketIo.listen(server);
@@ -145,9 +145,6 @@ let deleteLastElDB = (projectId) => {
 
 // event-handler for new incoming connections
 io.on('connection', function (socket) {
-    
-    var clientIp = socket.request.connection.remoteAddress;
-    console.log(clientIp);
 
     getElementHistory().then( (el_history) => {
         for (let objD of el_history) {
