@@ -6,18 +6,20 @@ var express = require('express'),
     socketIo = require('socket.io'),
     twilio = require('twilio');
 
+    const { stringify} = require('flatted/cjs');
+
 var promisify = require('util').promisify;
 
 const pg = require('pg-promise')();
-// const dbConfig = 'postgres://illia_chaban@localhost:5432/brainMe';
-const dbConfig = {
-    host: 'localhost',
-    port: 5432,
-    database: 'brainMe',
-    user: 'illia_chaban',
+const dbConfig = 'postgres://illia_chaban@localhost:5432/brainMe';
+// const dbConfig = {
+//     host: 'localhost',
+//     port: 5432,
+//     database: 'brainMe',
+//     user: 'illia_chaban',
     // password: 'user-password'
-};
-const db = pg(dbConfig);
+// };
+const db = pg(process.env.DATABASE_URL || dbConfig);
 
 const accountSid = 'AC2ceea3a33d11e9a9412fd25ae894828a';
 const authToken = 'e8345cab51239a74558a895455dc93b2';
@@ -96,8 +98,9 @@ app.use(urlencoded({ extended: false }));
 app.use(router);
 const server = http.createServer(app)
 
-console.log('Twilio Client app HTTP server running at http://localhost:3000');
-server.listen(3000);
+const port = process.env.PORT || 3000;
+console.log(`Twilio Client app HTTP server running at http://localhost:${port}`);
+server.listen(port);
 var io = socketIo.listen(server);
 
 
