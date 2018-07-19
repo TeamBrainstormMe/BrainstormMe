@@ -42,7 +42,7 @@ Online whiteboard for collaborative brainstorming. Users can:
 * Express
 * HTML
 * CSS
-* Amazon EC2
+* Heroku
 
 ## Code snippets:
 
